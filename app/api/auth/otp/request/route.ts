@@ -61,17 +61,27 @@ export async function POST(request: Request) {
 
     console.log(`[SERVER CONSOLE OTP] Email: ${cleanEmail} | OTP: ${otp}`);
 
-    const emailResult = await sendOtpEmail(cleanEmail, otp);
+    let previewUrl: string | boolean = false;
+    try {
+      const emailResult = await sendOtpEmail(cleanEmail, otp);
+      previewUrl = emailResult.previewUrl || false;
+    } catch (mailError) {
+      console.error("[OTP EMAIL DISPATCH ERROR]", mailError);
+    }
 
     return NextResponse.json({
-      message: "OTP sent successfully via email",
+      message: "OTP sent successfully",
       email: cleanEmail,
       devOtp: otp,
-      previewUrl: emailResult.previewUrl || undefined,
+      previewUrl: previewUrl || undefined,
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("[OTP REQUEST ERROR]", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: error?.message || "Internal server error",
+        details: process.env.NODE_ENV !== "production" ? String(error) : undefined
+      },
       { status: 500 }
     );
   }
