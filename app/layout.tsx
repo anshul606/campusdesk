@@ -25,8 +25,13 @@ const fontMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CampusDesk — Room & equipment booking for LNMIIT",
-  description: "Book rooms, labs, and equipment at LNMIIT without scheduling conflicts.",
+  title: "CampusDesk",
+  description: "CampusDesk LNMIIT resource reservation system.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
