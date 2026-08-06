@@ -18,7 +18,9 @@ CampusDesk is a full-stack Next.js app I built for the GDG LNMIIT recruitment ta
 
 **Cancels feel instant.** Optimistic UI updates when you cancel a reservation, and if the API call fails it just rolls back automatically instead of leaving the UI in a weird state.
 
-**Reminders run on their own.** A cron job sends an email an hour before your booking starts and flips past bookings to "completed." Set up with native Vercel Cron (`vercel.json` is already configured for it).
+> [!IMPORTANT]
+> **Cron Job Notice**: The automatic Vercel Cron (`vercel.json`) has been removed to maintain compatibility with Vercel platform plan restrictions. The reminder and auto-completion logic endpoint (`GET /api/cron/reminders`) is fully intact and can be manually triggered or scheduled using an external service (e.g., cron-job.org, GitHub Actions, or EasyCron).
+
 
 ## Running it locally
 
