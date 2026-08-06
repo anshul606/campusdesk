@@ -55,7 +55,20 @@ export default function ResourcesPage() {
   }, [searchQuery]);
 
   const fetchResources = useCallback(async () => {
-    setLoading(true);
+    const cacheKey = `cd_res_${selectedCategory}_${debouncedSearch}_${page}`;
+    const cachedStr = typeof window !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
+
+    if (cachedStr) {
+      try {
+        const cachedObj = JSON.parse(cachedStr);
+        setResources(cachedObj.data || []);
+        setTotalPages(Math.ceil((cachedObj.total || 0) / 6) || 1);
+        setLoading(false);
+      } catch {}
+    } else {
+      setLoading(true);
+    }
+
     setError(null);
     try {
       const url = `/api/resources?search=${encodeURIComponent(debouncedSearch)}&category=${selectedCategory}&page=${page}&limit=6`;
@@ -66,8 +79,13 @@ export default function ResourcesPage() {
       const data = await res.json();
       setResources(data.data || []);
       setTotalPages(Math.ceil((data.total || 0) / 6) || 1);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(cacheKey, JSON.stringify(data));
+      }
     } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+      if (!cachedStr) {
+        setError(err.message || "Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }

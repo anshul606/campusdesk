@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
+import { clearCache } from "@/lib/cache";
 
 export async function GET(
   request: Request,
@@ -51,6 +52,7 @@ export async function PATCH(
       },
     });
 
+    clearCache("resources");
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Resource not found or update failed" }, { status: 404 });
@@ -76,6 +78,7 @@ export async function DELETE(
       data: { isActive: false },
     });
 
+    clearCache("resources");
     return NextResponse.json({ message: "Resource soft deleted successfully", resource: softDeleted });
   } catch {
     return NextResponse.json({ error: "Resource not found" }, { status: 404 });

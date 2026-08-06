@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
+import { getCache, setCache, clearCache } from "@/lib/cache";
 
 export async function GET(request: Request) {
   const user = await getUserFromRequest(request);
@@ -17,6 +18,18 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
 
+  const cacheKey = `resources:${search.trim().toLowerCase()}:${category}:${page}:${limit}`;
+  const cached = getCache<{ data: any[]; page: number; limit: number; total: number }>(cacheKey);
+
+  if (cached) {
+    return NextResponse.json(cached, {
+      headers: {
+        "Cache-Control": "private, max-age=10, stale-while-revalidate=60",
+        "X-Cache": "HIT",
+      },
+    });
+  }
+
   const skip = (page - 1) * limit;
 
   const whereClause: any = {
@@ -29,9 +42,9 @@ export async function GET(request: Request) {
 
   if (search.trim()) {
     whereClause.OR = [
-      { name: { contains: search.trim() } },
-      { description: { contains: search.trim() } },
-      { location: { contains: search.trim() } },
+      { name: { contains: search.trim(), mode: "insensitive" } },
+      { description: { contains: search.trim(), mode: "insensitive" } },
+      { location: { contains: search.trim(), mode: "insensitive" } },
     ];
   }
 
@@ -45,11 +58,20 @@ export async function GET(request: Request) {
     db.resource.count({ where: whereClause }),
   ]);
 
-  return NextResponse.json({
+  const responsePayload = {
     data,
     page,
     limit,
     total,
+  };
+
+  setCache(cacheKey, responsePayload, 30);
+
+  return NextResponse.json(responsePayload, {
+    headers: {
+      "Cache-Control": "private, max-age=10, stale-while-revalidate=60",
+      "X-Cache": "MISS",
+    },
   });
 }
 
@@ -92,6 +114,7 @@ export async function POST(request: Request) {
       },
     });
 
+    clearCache("resources");
     return NextResponse.json(resource, { status: 201 });
   } catch (error) {
     return NextResponse.json(
