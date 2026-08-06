@@ -48,6 +48,10 @@ export async function POST(request: Request) {
       errors.startTime = "Start time must be in the future";
     }
 
+    if (end <= now) {
+      errors.endTime = "End time must be in the future";
+    }
+
     if (end <= start) {
       errors.endTime = "End time must be after start time";
     }
@@ -68,8 +72,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Resource not found or inactive" }, { status: 404 });
     }
 
-    const startHHMM = start.toTimeString().slice(0, 5);
-    const endHHMM = end.toTimeString().slice(0, 5);
+    const startHHMM = start.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
+    const endHHMM = end.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
 
     if (startHHMM < resource.openTime || endHHMM > resource.closeTime) {
       errors.startTime = `Slot must be within resource opening hours (${resource.openTime} - ${resource.closeTime})`;

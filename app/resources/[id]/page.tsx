@@ -41,10 +41,8 @@ export default function ResourceDetailPage({
 
   const [resource, setResource] = useState<Resource | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  });
+  const todayStr = new Date().toLocaleDateString("en-CA");
+  const [selectedDate, setSelectedDate] = useState(todayStr);
 
   const [loadingResource, setLoadingResource] = useState(true);
   const [loadingBookings, setLoadingBookings] = useState(false);
@@ -125,13 +123,16 @@ export default function ResourceDetailPage({
 
     setSubmitting(true);
     try {
+      const isoStart = new Date(startTime).toISOString();
+      const isoEnd = new Date(endTime).toISOString();
+
       const res = await authFetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resourceId: id,
-          startTime,
-          endTime,
+          startTime: isoStart,
+          endTime: isoEnd,
           purpose,
         }),
       });
@@ -215,6 +216,7 @@ export default function ResourceDetailPage({
               <h3 className="text-sm font-semibold text-[var(--color-ink)] dark:text-white">Schedule</h3>
               <input
                 type="date"
+                min={todayStr}
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="rounded-md border border-stone-300 px-2.5 py-1.5 text-sm font-mono text-[var(--color-ink)] focus:border-[var(--color-sandstone)] focus:outline-none dark:border-stone-700 dark:bg-stone-800 dark:text-white"
@@ -232,8 +234,10 @@ export default function ResourceDetailPage({
                 </div>
 
                 {hoursArray.map((hour, index) => {
+                  const now = new Date();
                   const slotStart = new Date(`${selectedDate}T${String(hour).padStart(2, "0")}:00:00`);
                   const slotEnd = new Date(`${selectedDate}T${String(hour + 1).padStart(2, "0")}:00:00`);
+                  const isPast = slotEnd <= now;
 
                   const matchedBooking = bookings.find((b) => {
                     const bStart = new Date(b.startTime);
@@ -250,13 +254,15 @@ export default function ResourceDetailPage({
                   return (
                     <div
                       key={hour}
-                      onClick={() => !isBooked && handleSelectSlot(hour)}
+                      onClick={() => !isBooked && !isPast && handleSelectSlot(hour)}
                       style={{ animationDelay: `${index * 30}ms` }}
                       className={`slot-enter flex items-center justify-between rounded-md border px-3 py-2.5 text-sm transition-colors ${
                         isMine
                           ? "border-stone-300 bg-stone-100 text-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 cursor-default"
                           : isBooked
                           ? "border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-800 dark:bg-stone-800/60 dark:text-stone-500 cursor-default"
+                          : isPast
+                          ? "border-stone-200/60 bg-stone-50 text-stone-400 dark:border-stone-800/40 dark:bg-stone-900/40 dark:text-stone-600 cursor-not-allowed opacity-50"
                           : isSelected
                           ? "border-[var(--color-sandstone)] bg-amber-50 text-[var(--color-sandstone)] dark:bg-amber-950/30 dark:border-amber-600 font-semibold cursor-pointer"
                           : "border-stone-200 bg-white hover:border-[var(--color-sandstone)]/50 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-stone-600 cursor-pointer"
@@ -270,6 +276,8 @@ export default function ResourceDetailPage({
                         <span className="text-xs font-medium text-stone-500 dark:text-stone-400">Your booking</span>
                       ) : isBooked ? (
                         <span className="text-xs text-stone-400">Booked</span>
+                      ) : isPast ? (
+                        <span className="text-xs text-stone-400 dark:text-stone-600">Passed</span>
                       ) : isSelected ? (
                         <span className="text-xs font-semibold text-[var(--color-sandstone)]">✓ Selected</span>
                       ) : (
