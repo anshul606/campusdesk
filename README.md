@@ -66,16 +66,6 @@ Every time an OTP goes out or a reminder fires, Nodemailer actually sends an HTM
 
 # [campusdesk.anshul.space](https://campusdesk.anshul.space)
 
-This is live. Here's how it actually got there:
-
-1. Created a Postgres database on Supabase and grabbed the pooled connection string (the `pgbouncer` one, not the direct connection, since Vercel's serverless functions need pooling).
-2. Swapped `provider = "sqlite"` for `provider = "postgresql"` in `prisma/schema.prisma` and ran `npx prisma db push` against the Supabase URL to get the schema up there.
-3. Pushed the repo to GitHub: `github.com/anshul/campusdesk` (placeholder, will fill in the real one).
-4. Imported the repo into Vercel, set `DATABASE_URL` (Supabase pooled string), `JWT_SECRET`, and `NEXT_PUBLIC_API_URL` (set to the production domain, not localhost) in the Vercel project's environment variables.
-5. Added `campusdesk.anshul.space` as a custom domain in Vercel and pointed the DNS at it.
-
-Deployed and running, no manual seeding needed on prod since the app populates data through actual usage.
-
 ## API reference
 
 - `POST /api/auth/otp/request` — request an OTP (max 3 per 10 min)
