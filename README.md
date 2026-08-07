@@ -6,7 +6,7 @@
 CampusDesk is a full-stack Next.js app I built for the GDG LNMIIT recruitment task. The idea is simple: LNMIIT has a bunch of halls, labs, and equipment that students and admins need to book, but there's no clean way to see what's free and grab a slot without double-booking something. This handles that end to end, from OTP login to a live availability grid to actual conflict-checked bookings.
 
 > [!IMPORTANT]
-> **Cron Job For Reminders**: The automatic Vercel Cron (`vercel.json`) has been removed to maintain compatibility with Vercel platform plan restrictions. The reminder and auto-completion logic endpoint (`GET /api/cron/reminders`) is fully intact and can be manually triggered or scheduled using an external service.
+> **Cron Job For Reminders**: The automatic Vercel Cron (`vercel.json`) I removed to maintain compatibility with Vercel platform plan restrictions. The reminder and auto-completion logic endpoint (`GET /api/cron/reminders`) is fully intact and can be manually triggered or scheduled using an external service.
 
 
 ## What it does
