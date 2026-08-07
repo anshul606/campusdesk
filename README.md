@@ -1,8 +1,9 @@
 # CampusDesk - LNMIIT Resources Booking System
 
-CampusDesk is a full-stack Next.js app I built for the GDG LNMIIT recruitment task. The idea is simple: LNMIIT has a bunch of halls, labs, and equipment that students and admins need to book, but there's no clean way to see what's free and grab a slot without double-booking something. This handles that end to end, from OTP login to a live availability grid to actual conflict-checked bookings.
+🎥 **Demo Video:** [https://campusdesk.anshul.space/video](https://campusdesk.anshul.space/video)  
+📄 **Design Document:** [https://github.com/anshul606/campusdesk/blob/main/DESIGN.md](https://github.com/anshul606/campusdesk/blob/main/DESIGN.md)
 
-**Answered questions:** the recruitment task's design questions are answered in [design.md](./design.md).
+CampusDesk is a full-stack Next.js app I built for the GDG LNMIIT recruitment task. The idea is simple: LNMIIT has a bunch of halls, labs, and equipment that students and admins need to book, but there's no clean way to see what's free and grab a slot without double-booking something. This handles that end to end, from OTP login to a live availability grid to actual conflict-checked bookings.
 
 > [!IMPORTANT]
 > **Cron Job For Reminders**: The automatic Vercel Cron (`vercel.json`) has been removed to maintain compatibility with Vercel platform plan restrictions. The reminder and auto-completion logic endpoint (`GET /api/cron/reminders`) is fully intact and can be manually triggered or scheduled using an external service.
