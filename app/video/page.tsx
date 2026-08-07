@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export default function VideoPage() {
-  const driveEmbedUrl = "https://drive.google.com/file/d/1j-E0ONqH6TFvw5q1e0urZ45lUsszwQp1/preview";
+  const driveEmbedUrl = "https://drive.google.com/file/d/1ZJ-vDjCySGq9S538tbs2n7noiWxE7o9A/preview";
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
